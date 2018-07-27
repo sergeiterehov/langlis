@@ -1,7 +1,7 @@
-import { Reducer } from "redux";
+import { Reducer, Action } from "redux";
 
-export interface ILeasson {
-    id: number;
+export interface ILesson {
+    id: string;
     name: string;
     author: string;
     createdAt: Date;
@@ -10,10 +10,10 @@ export interface ILeasson {
 
 export interface IAppStore {
     updatedAt: Date;
-    leassons: ILeasson[];
+    lessons: ILesson[];
 }
 
-export enum AppActions {
+export enum AppActionTypes {
     /**
      * Add list of leassons
      */
@@ -24,25 +24,30 @@ export enum AppActions {
     CleanLeassons,
 }
 
+export interface IAppStoreAction {
+    type: AppActionTypes;
+    lessons?: ILesson[];
+}
+
 const initialState: IAppStore = {
     updatedAt: new Date(2018, 1, 1),
-    leassons: [],
+    lessons: [],
 };
 
-export const appReducer: Reducer<IAppStore> = (state = initialState, action) => {
+export const appReducer: Reducer<IAppStore, IAppStoreAction> = (state = initialState, action) => {
     switch (action.type) {
-        case AppActions.CleanLeassons: return {
+        case AppActionTypes.CleanLeassons: return {
             ...state,
             updatedAt: new Date(),
-            leassons: [],
+            lessons: [],
         };
 
-        case AppActions.AddLeassons: return {
+        case AppActionTypes.AddLeassons: return {
             ...state,
             updatedAt: new Date(),
-            leassons: [
-                ...state.leassons,
-                ...action.leassons,
+            lessons: [
+                ...state.lessons,
+                ...action.lessons,
             ],
         };
     }

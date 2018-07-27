@@ -7,15 +7,28 @@ import LessonsScreen from "../screens/LessonsScreen";
 import LessonItemScreen from "../screens/LessonItemScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import { Store, createStore } from "redux";
-import { appReducer, IAppStore, AppActions } from "../actions/appReducer";
+import { appReducer, IAppStore, AppActionTypes, IAppStoreAction } from "../actions/appReducer";
 
 export default class App extends React.Component {
-    private store: Store<IAppStore>;
+    private store: Store<IAppStore, IAppStoreAction>;
 
     constructor(props) {
         super(props);
 
         this.store = createStore(appReducer);
+
+        this.store.dispatch({
+            type: AppActionTypes.AddLeassons,
+            lessons: [
+                {
+                    id: "1337",
+                    name: "Test lesson",
+                    author: "Tester",
+                    createdAt: new Date(),
+                    numberWords: 123,
+                },
+            ],
+        });
     }
 
     public componentDidMount() {
@@ -23,22 +36,26 @@ export default class App extends React.Component {
     }
 
     public render() {
-        const store = this.store.getState();
+        const appState = this.store.getState();
 
         return <HashRouter>
             <div>
                 <div>
-                    Updated at { store.updatedAt.toISOString() }
+                    Updated at { appState.updatedAt.toISOString() }
                 </div>
 
                 <Navbar />
                 <Switch>
                     <Route exact path="/" component={ WelcomeScreen } />
-                    <Route path="/lessons" component={ LessonsScreen } />
+                    <Route path="/lessons" render={ this.renderLeassonsScree } />
                     <Route path="/lesson/:lessonId" component={ LessonItemScreen } />
                     <Route render={ () => 404 } />
                 </Switch>
             </div>
         </HashRouter>;
+    }
+
+    private renderLeassonsScree = () => {
+        return <LessonsScreen lessons={ this.store.getState().lessons } />;
     }
 }
